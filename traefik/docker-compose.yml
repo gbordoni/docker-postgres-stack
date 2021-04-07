@@ -1,0 +1,25 @@
+version: '3'
+
+services:
+  reverse-proxy:
+    # The official v2.0 Traefik docker image
+    image: traefik:v2.0
+    restart: always
+    ports:
+      - "80:80"     # The HTTP port
+      - "3307:3306"
+      - "5433:5432"
+      - "8080" # The Web UI
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./traefik.toml:/etc/traefik/traefik.toml
+    labels:
+        - "traefik.http.routers.reverse-proxy.rule=Host(`traefik.localhost`)"
+        - "traefik.http.routers.reverse-proxy.entryPoints=web"
+        - "traefik.http.services.reverse-proxy.loadbalancer.server.port=8080"
+
+networks:
+  default:
+    external:
+      name: proxy
+

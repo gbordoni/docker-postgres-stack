@@ -1,0 +1,31 @@
+version: '3.5'
+
+services:
+  pgadmin:
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-admin@ordename.cl}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-admin}
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+    volumes:
+       - pgadmin:/root/.pgadmin
+    ports:
+      - "80"
+    networks:
+      - proxy
+      - db
+    restart: always
+    labels:
+      - "traefik.http.routers.pgadmin.rule=Host(`pgadmin.docker.localhost`)"
+      - "traefik.http.routers.pgadmin.entryPoints=web"
+      - "traefik.docker.network=proxy"
+
+networks:
+  proxy:
+      external: true
+  db:
+      external: true
+
+volumes:
+    pgadmin:
+    

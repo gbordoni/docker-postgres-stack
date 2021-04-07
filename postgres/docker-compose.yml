@@ -1,0 +1,30 @@
+version: '3.5'
+
+services:
+  postgres:
+    image: postgres
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-ordename}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-admin}
+      PGDATA: /data/postgres
+    volumes:
+       - postgres:/data/postgres
+    ports:
+      - "5432"
+    networks:
+      - db
+      - proxy
+    restart: always
+    labels:
+      - "traefik.tcp.routers.postgres.entryPoints=postgres"
+      - "traefik.tcp.routers.postgres.rule=HostSNI(`*`)"
+      - "traefik.docker.network=proxy"
+
+networks:
+  db:
+    external: true
+  proxy:
+    external: true
+
+volumes:
+    postgres:
